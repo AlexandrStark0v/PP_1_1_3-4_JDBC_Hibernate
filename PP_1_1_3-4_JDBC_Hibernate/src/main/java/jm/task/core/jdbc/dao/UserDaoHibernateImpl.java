@@ -1,6 +1,5 @@
 package jm.task.core.jdbc.dao;
 
-
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
 import org.hibernate.Session;
@@ -94,16 +93,10 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public List<User> getAllUsers() {
-        Transaction transaction = null;
         List<User> users = new ArrayList<>();
         try (Session session = Util.getSessionFactory().openSession()) {
-            transaction = session.beginTransaction();
-            users = session.createQuery("from User").list();
-            transaction.commit();
+            users = session.createQuery("FROM User", User.class).getResultList();
         } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
             System.out.println("Ошибка при получении списка пользователей");
             e.printStackTrace();
         }
@@ -115,7 +108,7 @@ public class UserDaoHibernateImpl implements UserDao {
         Transaction transaction = null;
         try (Session session = Util.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
-            session.createSQLQuery("TRUNCATE TABLE users").executeUpdate();
+            session.createQuery("DELETE FROM User").executeUpdate();
             transaction.commit();
             System.out.println("Таблица очищена");
         } catch (Exception e) {
@@ -127,3 +120,4 @@ public class UserDaoHibernateImpl implements UserDao {
         }
     }
 }
+
